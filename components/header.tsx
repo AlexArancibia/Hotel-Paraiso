@@ -72,7 +72,7 @@ export default function Header() {
               <motion.button
                 key={item.name}
                 onClick={() => handleNavClick(item.href)}
-                initial={{ y: -30, opacity: 0 }}
+                initial={{ y: -60, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{
                   duration: 0.8,

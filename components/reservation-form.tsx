@@ -19,13 +19,6 @@ export default function ReservationForm() {
   const [rooms, setRooms] = useState("01 HAB")
   const [city, setCity] = useState("CHICLAYO")
 
-  const isMobile = () => {
-    return (
-      window.innerWidth <= 768 ||
-      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
-    )
-  }
-
   const handleReservation = () => {
     const checkInFormatted = checkInDate ? format(checkInDate, "dd-MM-yyyy") : "No seleccionada"
     const checkOutFormatted = checkOutDate ? format(checkOutDate, "dd-MM-yyyy") : "No seleccionada"
@@ -43,14 +36,9 @@ export default function ReservationForm() {
 
 Saludos!`
 
-    if (isMobile()) {
-      const whatsappUrl = `https://wa.me/51958100066?text=${encodeURIComponent(message)}`
-      window.open(whatsappUrl, "_blank", "noopener,noreferrer")
-    } else {
-      const subject = "Solicitud de Reserva - Hoteles Paraíso"
-      const mailtoUrl = `mailto:ventas@hotelesparaiso.com.pe?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(message)}`
-      window.open(mailtoUrl, "_blank", "noopener,noreferrer")
-    }
+    // Siempre usar WhatsApp independientemente del dispositivo
+    const whatsappUrl = `https://wa.me/51958100066?text=${encodeURIComponent(message)}`
+    window.open(whatsappUrl, "_blank", "noopener,noreferrer")
   }
 
   // Estilo común para todos los elementos del formulario
@@ -218,7 +206,7 @@ Saludos!`
                   )}
                   aria-label="Realizar reserva"
                 >
-                  RESERVA
+                  RESERVAR
                 </Button>
               </div>
             </div>

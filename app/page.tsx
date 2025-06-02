@@ -9,6 +9,7 @@ import HotelsShowcaseSection from "@/components/hotels-showcase-section"
 import ReservationForm from "@/components/reservation-form"
 import ServiceBanner from "@/components/service-banner"
 import ServicesSection from "@/components/service-section"
+import { WhatsAppButton } from "@/components/wspbutton"
 
 
 export default function LandingPage() {
@@ -38,6 +39,7 @@ export default function LandingPage() {
       </section>
       <ServiceBanner />
       <Footer />
+        <WhatsAppButton />
     </div>
   )
 }

@@ -9,7 +9,7 @@ export default function AboutSection() {
           <p className="text-sm sm:text-base md:text-lg leading-relaxed">
             Hoteles Paraíso <span className="font-bold">comenzó en 1989</span> como una pequeña empresa familiar{" "}
             <span className="font-bold">en Chiclayo</span>, con solo 14 habitaciones. Hoy, también estamos presentes{" "}
-            <span className="font-bold">en Trujillo y Piura</span>, con un total de 156 habitaciones y 40 colaboradores.
+            <span className="font-bold">en Trujillo y Piura</span>, con un total de 174 habitaciones y 60 colaboradores.
             Nuestros hoteles son reconocidos por su céntrica ubicación, cómodas instalaciones y sobre todo, por la
             calidad y compromiso de nuestro personal.
           </p>

@@ -2,19 +2,8 @@
 
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { X } from "lucide-react"
-
-// Add this style to the top of the component
-const fadeInAnimation = `
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-  .animate-fadeIn {
-    animation: fadeIn 0.3s ease-in-out;
-  }
-`
 
 interface GalleryImage {
   src: string
@@ -24,59 +13,99 @@ interface GalleryImage {
 interface Hotel {
   id: string
   name: string
-  mainImage: GalleryImage
-  galleryImages: GalleryImage[]
+  displayName: string
 }
 
 export default function HotelsShowcaseSection() {
   const [lightboxImage, setLightboxImage] = useState<GalleryImage | null>(null)
-  const [hoveredImages, setHoveredImages] = useState<{ [key: string]: string }>({})
-  const [imageLoading, setImageLoading] = useState<{ [key: string]: boolean }>({})
+  const [currentImageIndex, setCurrentImageIndex] = useState<{ [key: string]: number }>({})
+  const [hotelImages, setHotelImages] = useState<{ [key: string]: GalleryImage[] }>({})
+  const [isTransitioning, setIsTransitioning] = useState<{ [key: string]: boolean }>({})
 
   const hotels: Hotel[] = [
     {
       id: "piura",
-      name: "Piura",
-      mainImage: {
-        src: "/modern-hotel-orange.png",
-        alt: "Hotel Paraíso Piura - Habitación principal",
-      },
-      galleryImages: [
-        { src: "/elegant-hotel-lobby.png", alt: "Lobby Hotel Piura" },
-        { src: "/modern-hotel-bathroom.png", alt: "Baño Hotel Piura" },
-        { src: "/hotel-bedroom.png", alt: "Dormitorio Hotel Piura" },
-        { src: "/luxurious-hotel-suite.png", alt: "Suite Hotel Piura" },
-      ],
+      name: "piura",
+      displayName: "Piura",
     },
     {
       id: "chiclayo",
-      name: "Chiclayo",
-      mainImage: {
-        src: "/elegant-modern-hotel.png",
-        alt: "Hotel Paraíso Chiclayo - Habitación principal",
-      },
-      galleryImages: [
-        { src: "/placeholder-uzk4x.png", alt: "Recepción Hotel Chiclayo" },
-        { src: "/elegant-hotel-dining.png", alt: "Comedor Hotel Chiclayo" },
-        { src: "/placeholder-23vpn.png", alt: "Sala de conferencias Hotel Chiclayo" },
-        { src: "/modern-hotel-exterior.png", alt: "Exterior Hotel Chiclayo" },
-      ],
+      name: "chiclayo",
+      displayName: "Chiclayo",
     },
     {
       id: "trujillo",
-      name: "Trujillo",
-      mainImage: {
-        src: "/luxury-hotel-jacuzzi-suite.png",
-        alt: "Hotel Paraíso Trujillo - Suite principal",
-      },
-      galleryImages: [
-        { src: "/hotel-spa.png", alt: "Spa Hotel Trujillo" },
-        { src: "/hotel-restaurant.png", alt: "Restaurante Hotel Trujillo" },
-        { src: "/hotel-gym.png", alt: "Gimnasio Hotel Trujillo" },
-        { src: "/hotel-terrace.png", alt: "Terraza Hotel Trujillo" },
-      ],
+      name: "trujillo",
+      displayName: "Trujillo",
     },
   ]
+
+  // Función para generar las rutas de imágenes dinámicamente
+  const generateImagePaths = (hotelName: string): GalleryImage[] => {
+    const images: GalleryImage[] = []
+
+    // Imágenes del 1 al 5 (la imagen 1 será la principal)
+    for (let i = 1; i <= 5; i++) {
+      images.push({
+        src: `/${hotelName}/${hotelName}${i}.jpg`,
+        alt: `Hotel Paraíso ${hotelName.charAt(0).toUpperCase() + hotelName.slice(1)} - Vista ${i}`,
+      })
+    }
+
+    return images
+  }
+
+  // Función para verificar si una imagen existe
+  const checkImageExists = async (src: string): Promise<boolean> => {
+    return new Promise((resolve) => {
+      const img = new window.Image()
+      img.crossOrigin = "anonymous"
+      img.onload = () => resolve(true)
+      img.onerror = () => resolve(false)
+      img.src = src
+    })
+  }
+
+  // Cargar imágenes existentes para cada hotel
+  useEffect(() => {
+    const loadHotelImages = async () => {
+      const newHotelImages: { [key: string]: GalleryImage[] } = {}
+      const newCurrentImageIndex: { [key: string]: number } = {}
+
+      for (const hotel of hotels) {
+        const potentialImages = generateImagePaths(hotel.name)
+        const existingImages: GalleryImage[] = []
+
+        for (const image of potentialImages) {
+          const exists = await checkImageExists(image.src)
+          if (exists) {
+            existingImages.push(image)
+          }
+        }
+
+        newHotelImages[hotel.id] = existingImages.slice(0, 5)
+        newCurrentImageIndex[hotel.id] = 0
+      }
+
+      setHotelImages(newHotelImages)
+      setCurrentImageIndex(newCurrentImageIndex)
+    }
+
+    loadHotelImages()
+  }, [])
+
+  const handleThumbnailClick = (hotelId: string, index: number) => {
+    if (currentImageIndex[hotelId] === index) return
+
+    setIsTransitioning((prev) => ({ ...prev, [hotelId]: true }))
+
+    setTimeout(() => {
+      setCurrentImageIndex((prev) => ({ ...prev, [hotelId]: index }))
+      setTimeout(() => {
+        setIsTransitioning((prev) => ({ ...prev, [hotelId]: false }))
+      }, 200)
+    }, 100)
+  }
 
   const handleHotelReservation = (hotel: string) => {
     const message = `Hola! Me interesa hacer una reserva en el Hotel Paraíso ${hotel}. ¿Podrían proporcionarme información sobre disponibilidad, precios y servicios?
@@ -87,28 +116,6 @@ Gracias!`
     window.open(whatsappUrl, "_blank")
   }
 
-  const handleImageHover = (hotelId: string, imageSrc: string) => {
-    setImageLoading((prev) => ({ ...prev, [hotelId]: true }))
-    const img = new window.Image()
-    img.crossOrigin = "anonymous"
-    img.onload = () => {
-      setHoveredImages((prev) => ({ ...prev, [hotelId]: imageSrc }))
-      setImageLoading((prev) => ({ ...prev, [hotelId]: false }))
-    }
-    img.onerror = () => {
-      setImageLoading((prev) => ({ ...prev, [hotelId]: false }))
-    }
-    img.src = imageSrc
-  }
-
-  const handleImageLeave = (hotelId: string) => {
-    setHoveredImages((prev) => {
-      const newState = { ...prev }
-      delete newState[hotelId]
-      return newState
-    })
-  }
-
   const openLightbox = (image: GalleryImage) => {
     setLightboxImage(image)
   }
@@ -117,8 +124,10 @@ Gracias!`
     setLightboxImage(null)
   }
 
-  const getCurrentMainImage = (hotel: Hotel) => {
-    return hoveredImages[hotel.id] ? { src: hoveredImages[hotel.id], alt: `Vista de ${hotel.name}` } : hotel.mainImage
+  const getCurrentImage = (hotel: Hotel) => {
+    const images = hotelImages[hotel.id] || []
+    const currentIndex = currentImageIndex[hotel.id] || 0
+    return images[currentIndex] || { src: "/placeholder.svg", alt: `Hotel ${hotel.displayName}` }
   }
 
   const getHotelContent = (hotelId: string) => {
@@ -134,7 +143,7 @@ Gracias!`
         return {
           title: "HOTELES PARAÍSO CHICLAYO:",
           description:
-            "Ubicado en el corazón de Chiclayo, ubicado en el centro comercial de la ciudad, en el punto estratégico para tus viajes de negocios. Cuenta con 65 habitaciones entre individuales, matrimoniales, dobles y triples; ideales para vivir una experiencia cómoda y placentera a fin.",
+            "Un hotel dinámico y acogedor. Ubicado en el centro comercial de la ciudad, en el punto estratégico para tus viajes de negocios. Cuenta con 65 habitaciones entre individuales, matrimoniales, dobles y triples; ideales para vivir una experiencia cómoda de principio a fin.",
           buttonClass: "bg-gray-800 hover:bg-gray-900",
         }
       case "trujillo":
@@ -151,9 +160,41 @@ Gracias!`
 
   return (
     <>
-      <style jsx global>
-        {fadeInAnimation}
-      </style>
+      <style jsx global>{`
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes slideIn {
+          from { 
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to { 
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.3s ease-in-out;
+        }
+        .animate-slideIn {
+          animation: slideIn 0.4s ease-out;
+        }
+        .main-image-transition {
+          transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+        }
+        .main-image-transitioning {
+          opacity: 0;
+        }
+        .thumbnail-hover {
+          transition: all 0.2s ease-in-out;
+        }
+        .thumbnail-hover:hover:not(.ring-2) {
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+      `}</style>
+
       <section className="relative bg-gray-100/65 container-section py-16 lg:py-24">
         <div className="content-section">
           {/* Título principal */}
@@ -165,59 +206,84 @@ Gracias!`
 
           {/* Grid de hoteles */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 sm:gap-8">
-            {hotels.map((hotel, index) => {
+            {hotels.map((hotel) => {
               const content = getHotelContent(hotel.id)
-              const currentMainImage = getCurrentMainImage(hotel)
+              const currentImage = getCurrentImage(hotel)
+              const images = hotelImages[hotel.id] || []
+              const currentIndex = currentImageIndex[hotel.id] || 0
+              const isTransitioningImage = isTransitioning[hotel.id] || false
 
               return (
                 <div
                   key={hotel.id}
-                  className={`bg-white rounded-3xl shadow-lg lg:shadow-2xl flex flex-col ${
+                  className={`bg-white rounded-2xl shadow-lg lg:shadow-xl flex flex-col overflow-hidden ${
                     hotel.id === "trujillo" ? "md:col-span-2 lg:col-span-1" : ""
                   }`}
                 >
-                  {/* Imagen principal */}
-                  <div className="relative h-48 sm:h-56 lg:h-72 overflow-hidden rounded-t-3xl cursor-pointer">
-                    <Image
-                      src={currentMainImage.src || "/placeholder.svg"}
-                      alt={currentMainImage.alt}
-                      fill
-                      className="object-cover transition-opacity duration-300 ease-in-out"
-                      onClick={() => openLightbox(currentMainImage)}
-                      quality={100}
-                    />
-                  </div>
-
-                  {/* Galería de miniaturas */}
-                  <div className="grid grid-cols-4 gap-1 p-1">
-                    {hotel.galleryImages.map((image, imgIndex) => (
+                  {/* Galería de imágenes - Imagen principal */}
+                  <div className="relative">
+                    <div className="relative h-48 sm:h-56 lg:h-64 overflow-hidden">
                       <div
-                        key={imgIndex}
-                        className="relative h-16 sm:h-20 overflow-hidden cursor-pointer rounded-sm"
-                        onMouseEnter={() => handleImageHover(hotel.id, image.src)}
-                        onMouseLeave={() => handleImageLeave(hotel.id)}
-                        onClick={() => openLightbox(image)}
+                        className={`relative w-full h-full cursor-pointer main-image-transition ${
+                          isTransitioningImage ? "main-image-transitioning" : ""
+                        }`}
+                        onClick={() => openLightbox(currentImage)}
                       >
-                        <Image src={image.src || "/placeholder.svg"} alt={image.alt} fill className="object-cover" />
+                        <Image
+                          src={currentImage.src || "/placeholder.svg"}
+                          alt={currentImage.alt}
+                          fill
+                          className="object-cover"
+                          quality={100}
+                        />
                       </div>
-                    ))}
+                    </div>
+
+                    {/* Galería de miniaturas - Todas las 5 imágenes */}
+                    {images.length > 0 && (
+                      <div className="p-2 bg-white">
+                        <div className="grid grid-cols-5 gap-2">
+                          {images.map((image, index) => (
+                            <div
+                              key={index}
+                              className={`relative h-14 sm:h-16 lg:h-18 overflow-hidden rounded-lg cursor-pointer thumbnail-hover ${
+                                index === currentIndex ? "ring-2 ring-[#F58718] ring-offset-2" : ""
+                              }`}
+                              onClick={() => handleThumbnailClick(hotel.id, index)}
+                            >
+                              <Image
+                                src={image.src || "/placeholder.svg"}
+                                alt={image.alt}
+                                fill
+                                className="object-cover"
+                                quality={80}
+                              />
+                              {/* Overlay para imagen activa */}
+                              {index === currentIndex && (
+                                <div className="absolute inset-0 bg-[#F58718]/10 pointer-events-none" />
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* Contenido */}
-                  <div className="flex-1 pt-4 lg:pt-8 flex flex-col">
+                  <div className="flex-1 pt-4 lg:pt-6 flex flex-col">
                     <h3 className="text-lg sm:text-xl px-6 font-bold text-gray-800 mb-3 sm:mb-4 tracking-wide">
                       {content.title}
                     </h3>
                     <p
                       className={`text-gray-600 px-6 text-xs sm:text-sm leading-relaxed flex-1 ${
-                        hotel.id === "trujillo" ? "mb-4 sm:mb-8" : "mb-4 sm:mb-6"
+                        hotel.id === "trujillo" ? "mb-4 sm:mb-6" : "mb-4 sm:mb-6"
                       }`}
                     >
                       {content.description}
                     </p>
                     <Button
-                      onClick={() => handleHotelReservation(hotel.name)}
-                      className={`w-full ${content.buttonClass} text-white font-bold py-6 sm:py-8 px-4 sm:px-6 rounded-b-3xl rounded-t-none text-xs sm:text-base uppercase tracking-wide`}
+                      onClick={() => handleHotelReservation(hotel.displayName)}
+                      className={`w-full ${content.buttonClass} text-white font-bold py-6 sm:py-8 px-4 sm:px-6 rounded-none text-xs sm:text-base uppercase tracking-wide`}
                     >
                       RESERVAR AHORA
                     </Button>
@@ -229,21 +295,21 @@ Gracias!`
         </div>
       </section>
 
-      {/* Lightbox */}
+      {/* Lightbox mejorado */}
       {lightboxImage && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fadeIn"
           style={{
-            backgroundColor: "rgba(0, 0, 0, 0.8)",
-            backdropFilter: "blur(8px)",
-            WebkitBackdropFilter: "blur(8px)",
+            backgroundColor: "rgba(0, 0, 0, 0.9)",
+            backdropFilter: "blur(10px)",
+            WebkitBackdropFilter: "blur(10px)",
           }}
           onClick={closeLightbox}
         >
-          <div className="relative max-w-4xl max-h-full">
+          <div className="relative max-w-5xl max-h-full animate-slideIn">
             <button
               onClick={closeLightbox}
-              className="absolute -top-12 right-0 text-white p-2 rounded-full"
+              className="absolute -top-12 right-0 text-white hover:text-gray-300 p-2 rounded-full transition-colors duration-200"
               aria-label="Cerrar lightbox"
             >
               <X size={32} />
@@ -252,9 +318,9 @@ Gracias!`
               <Image
                 src={lightboxImage.src || "/placeholder.svg"}
                 alt={lightboxImage.alt}
-                width={1200}
-                height={800}
-                className="object-contain max-w-full max-h-[80vh] rounded-lg shadow-2xl"
+                width={1400}
+                height={900}
+                className="object-contain max-w-full max-h-[85vh] rounded-lg shadow-2xl"
                 quality={100}
                 onClick={(e) => e.stopPropagation()}
               />

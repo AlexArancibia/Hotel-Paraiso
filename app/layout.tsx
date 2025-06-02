@@ -2,6 +2,7 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Montserrat } from "next/font/google"
 import "./globals.css"
+import { WhatsAppButton } from "@/components/wspbutton"
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -148,6 +149,7 @@ export default function RootLayout({
         />
       </head>
       <body className="font-montserrat antialiased">{children}</body>
+      <WhatsAppButton />
     </html>
   )
 }
