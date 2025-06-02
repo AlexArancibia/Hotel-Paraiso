@@ -71,6 +71,7 @@ const services = [
 
 export default function ServicesSection() {
   const [isMobile, setIsMobile] = useState(false)
+  const [activeService, setActiveService] = useState<number | null>(null)
 
   // Detectar si es móvil para aplicar el patrón de ajedrez adecuado
   useEffect(() => {
@@ -86,140 +87,127 @@ export default function ServicesSection() {
     }
   }, [])
 
+  const handleServiceClick = (index: number) => {
+    if (isMobile) {
+      setActiveService(activeService === index ? null : index)
+    }
+  }
+
   return (
-    <>
-      <style jsx global>{`
-        .flip-card {
-          perspective: 1000px;
-        }
-        
-        .flip-card-inner {
-          position: relative;
-          width: 100%;
-          height: 100%;
-          text-align: center;
-          transition: transform 0.6s;
-          transform-style: preserve-3d;
-        }
-        
-        .flip-card:hover .flip-card-inner {
-          transform: rotateY(180deg);
-        }
-        
-        .flip-card-front, .flip-card-back {
-          position: absolute;
-          width: 100%;
-          height: 100%;
-          -webkit-backface-visibility: hidden;
-          backface-visibility: hidden;
-          border-radius: 0;
-        }
-        
-        .flip-card-back {
-          transform: rotateY(180deg);
-        }
-      `}</style>
+    <section className="relative bg-white py-16 sm:py-20 container-section">
+      <div className="content-section">
+        {/* Título principal */}
+        <div className="text-center mb-12 sm:mb-16">
+          <h2 className="text-2xl lg:text-4xl font-bold text-gray-800 mb-4 tracking-tight">
+            NUESTROS <span className="text-[#F58718]">SERVICIOS</span>
+          </h2>
+          <p className="text-sm sm:text-base lg:text-lg text-gray-600 font-medium">
+            Todo lo necesario para disfrutar al máximo tu estadía
+          </p>
+        </div>
 
-      <section className="relative bg-white py-16 sm:py-20 container-section">
-        <div className="content-section">
-          {/* Título principal */}
-          <div className="text-center mb-12 sm:mb-16">
-            <h2 className="text-2xl lg:text-4xl font-bold text-gray-800 mb-4 tracking-tight">
-              NUESTROS <span className="text-[#F58718]">SERVICIOS</span>
-            </h2>
-            <p className="text-sm sm:text-base lg:text-lg text-gray-600 font-medium">
-              Todo lo necesario para disfrutar al máximo tu estadía
-            </p>
-          </div>
+        {/* Grid de servicios en patrón de ajedrez */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4 mb-12">
+          {services.map((service, index) => {
+            // Lógica para móvil: 2 columnas (patrón de ajedrez real)
+            // Lógica para desktop: 4 columnas (mantener patrón original)
+            let isOrange
 
-          {/* Grid de servicios en patrón de ajedrez */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4 mb-12">
-            {services.map((service, index) => {
-              // Lógica para móvil: 2 columnas (patrón de ajedrez real)
-              // Lógica para desktop: 4 columnas (mantener patrón original)
-              let isOrange
+            if (isMobile) {
+              // En móvil: patrón de ajedrez con 2 columnas
+              const row = Math.floor(index / 2) // 2 columnas en móvil
+              const col = index % 2
+              isOrange = (row + col) % 2 === 0
+            } else {
+              // En desktop: mantener el patrón original
+              const row = Math.floor(index / 4)
+              const col = index % 4
+              isOrange = (row + col) % 2 === 0
+            }
 
-              if (isMobile) {
-                // En móvil: patrón de ajedrez con 2 columnas
-                const row = Math.floor(index / 2) // 2 columnas en móvil
-                const col = index % 2
-                isOrange = (row + col) % 2 === 0
-              } else {
-                // En desktop: mantener el patrón original
-                const row = Math.floor(index / 4)
-                const col = index % 4
-                isOrange = (row + col) % 2 === 0
-              }
+            const isActive = isMobile && activeService === index
+            const shouldShowOverlay = isMobile ? isActive : false
 
-              return (
-                <div key={service.name} className="flip-card aspect-square">
-                  <div className="flip-card-inner">
-                    {/* Cara frontal */}
-                    <div
-                      className={`
-                        flip-card-front flex flex-col items-center justify-center p-3 sm:p-4 lg:p-6 
-                        transition-all duration-300 group
-                        ${
-                          isOrange
-                            ? "bg-[#F58718] text-white hover:bg-[#E07612]"
-                            : "bg-gray-200 text-gray-800 hover:bg-gray-300"
-                        }
-                      `}
-                    >
-                      {/* Imagen del servicio */}
-                      <div className="flex items-center justify-center mb-2 sm:mb-3 lg:mb-4 transition-all duration-300 group-hover:scale-110 relative overflow-hidden">
-                        <div className="relative w-24 h-24 sm:w-32 sm:h-32 lg:w-40 lg:h-40">
-                          <Image
-                            src={service.image || "/placeholder.svg"}
-                            alt={service.name}
-                            fill
-                            className={`object-contain transition-transform duration-300 group-hover:scale-110 ${
-                              isOrange ? "brightness-0 invert" : "brightness-0"
-                            }`}
-                          />
-                        </div>
-                      </div>
-
-                      {/* Nombre del servicio */}
-                      <h3
-                        className={`
-                          text-xs sm:text-sm font-bold text-center leading-tight tracking-wide
-                          transition-all duration-300
-                          ${isOrange ? "text-white" : "text-gray-800"}
-                        `}
-                      >
-                        {service.name}
-                      </h3>
-                    </div>
-
-                    {/* Cara trasera */}
-                    <div
-                      className={`
-                        flip-card-back flex flex-col items-center justify-center p-3 sm:p-4 lg:p-6
-                        ${isOrange ? "bg-[#E07612] text-white" : "bg-gray-300 text-gray-800"}
-                      `}
-                    >
-                      {/* Título del servicio */}
-                      <h3
-                        className={`text-xs sm:text-sm font-bold text-center mb-2 sm:mb-3 ${isOrange ? "text-white" : "text-gray-800"}`}
-                      >
-                        {service.name}
-                      </h3>
-
-                      {/* Descripción */}
-                      <p
-                        className={`text-xs sm:text-xs lg:text-sm text-center leading-tight ${isOrange ? "text-white" : "text-gray-700"}`}
-                      >
-                        {service.description}
-                      </p>
+            return (
+              <div
+                key={service.name}
+                className={`aspect-square group cursor-pointer relative overflow-hidden ${
+                  isMobile ? "touch-manipulation" : ""
+                }`}
+                onClick={() => handleServiceClick(index)}
+              >
+                {/* Contenido principal */}
+                <div
+                  className={`
+                    w-full h-full flex flex-col items-center justify-center p-3 sm:p-4 lg:p-6 
+                    transition-all duration-300 relative
+                    ${isMobile ? (isActive ? "blur-sm" : "") : "group-hover:blur-sm"}
+                    ${
+                      isOrange
+                        ? "bg-[#F58718] text-white hover:bg-[#E07612]"
+                        : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                    }
+                  `}
+                >
+                  {/* Imagen del servicio */}
+                  <div className="flex items-center justify-center mb-2 sm:mb-3 lg:mb-4 transition-all duration-300 relative overflow-hidden">
+                    <div className="relative w-24 h-24 sm:w-32 sm:h-32 lg:w-40 lg:h-40">
+                      <Image
+                        src={service.image || "/placeholder.svg"}
+                        alt={service.name}
+                        fill
+                        className={`object-contain transition-transform duration-300 ${
+                          isOrange ? "brightness-0 invert" : "brightness-0"
+                        }`}
+                      />
                     </div>
                   </div>
+
+                  {/* Nombre del servicio */}
+                  <h3
+                    className={`
+                      text-xs sm:text-sm font-bold text-center leading-tight tracking-wide
+                      transition-all duration-300
+                      ${isOrange ? "text-white" : "text-gray-800"}
+                    `}
+                  >
+                    {service.name}
+                  </h3>
                 </div>
-              )
-            })}
-          </div>
+
+                {/* Overlay con descripción */}
+                <div
+                  className={`
+                    absolute inset-0 flex flex-col items-center justify-center p-3 sm:p-4 lg:p-6
+                    transition-all duration-300 backdrop-blur-md
+                    ${
+                      isMobile
+                        ? isActive
+                          ? "opacity-100"
+                          : "opacity-0 pointer-events-none"
+                        : "opacity-0 group-hover:opacity-100"
+                    }
+                    ${isOrange ? "bg-[#E07612]/80" : "bg-gray-800/80"}
+                  `}
+                >
+                  {/* Título del servicio en overlay */}
+                  <h3 className="text-xs sm:text-sm font-bold text-center mb-2 sm:mb-3 text-white">{service.name}</h3>
+
+                  {/* Descripción */}
+                  <p className="text-xs sm:text-xs lg:text-sm text-center leading-tight text-white">
+                    {service.description}
+                  </p>
+
+                  {/* Indicador de cierre para móvil */}
+                  {isMobile && isActive && (
+                    <div className="absolute top-2 right-2 text-white text-lg font-bold opacity-70">×</div>
+                  )}
+                </div>
+              </div>
+            )
+          })}
         </div>
-      </section>
-    </>
+      </div>
+    </section>
   )
 }
