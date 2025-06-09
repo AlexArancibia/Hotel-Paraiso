@@ -6,6 +6,7 @@ import Header from "@/components/header"
 import HeroSlider from "@/components/hero-slider"
 import HotelsMapSection from "@/components/hotels-map-section"
 import HotelsShowcaseSection from "@/components/hotels-showcase-section"
+import { InstagramPosts } from "@/components/instagram-section"
 import ReservationForm from "@/components/reservation-form"
 import ServiceBanner from "@/components/service-banner"
 import ServicesSection from "@/components/service-section"
@@ -36,6 +37,9 @@ export default function LandingPage() {
       </section>
       <section id="servicios">
         <ServicesSection />
+      </section>
+      <section id="instagram">
+        <InstagramPosts />
       </section>
       <ServiceBanner />
       <Footer />
