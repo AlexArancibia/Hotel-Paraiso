@@ -1,5 +1,6 @@
 "use client"
-import { useState, useEffect, useCallback } from "react"
+
+import { useState, useEffect, useCallback, useMemo } from "react"
 import { motion } from "framer-motion"
 import Image from "next/image"
 
@@ -16,116 +17,185 @@ const slides = [
   },
 ]
 
+// Precargar la siguiente imagen
+const preloadNextImage = (nextIndex: number) => {
+  if (typeof window !== "undefined" && slides[nextIndex]) {
+    const link = document.createElement("link")
+    link.rel = "preload"
+    link.as = "image"
+    link.href = slides[nextIndex].image
+    document.head.appendChild(link)
+  }
+}
+
 export default function HeroSlider() {
   const [currentSlide, setCurrentSlide] = useState(0)
-  const [isLoaded, setIsLoaded] = useState(false)
+  const [imagesLoaded, setImagesLoaded] = useState<Set<number>>(new Set([0])) // Precargar primera imagen
 
-  // Precargar todas las imágenes
-  useEffect(() => {
-    const preloadImages = async () => {
-      const imagePromises = slides.map((slide) => {
-        return new Promise((resolve, reject) => {
-          const img = new window.Image()
-          img.onload = resolve
-          img.onerror = reject
-          img.src = slide.image
-        })
-      })
-      
-      try {
-        await Promise.all(imagePromises)
-        setIsLoaded(true)
-      } catch (error) {
-        console.error('Error precargando imágenes:', error)
-        setIsLoaded(true) // Mostrar de todas formas
-      }
-    }
+  // Memoizar el siguiente slide para evitar cálculos repetidos
+  const nextSlide = useMemo(() => (currentSlide + 1) % slides.length, [currentSlide])
 
-    preloadImages()
-  }, [])
-
-  // Memoizar el cambio de slide para evitar re-renders innecesarios
-  const nextSlide = useCallback(() => {
-    setCurrentSlide((prev) => (prev + 1) % slides.length)
+  // Función memoizada para cambiar slide
+  const changeSlide = useCallback(() => {
+    setCurrentSlide((prev) => {
+      const next = (prev + 1) % slides.length
+      // Precargar la siguiente imagen
+      const nextNext = (next + 1) % slides.length
+      preloadNextImage(nextNext)
+      return next
+    })
   }, [])
 
   useEffect(() => {
-    if (!isLoaded) return // No iniciar timer hasta que las imágenes estén cargadas
-    
-    const timer = setInterval(nextSlide, 7000)
+    // Precargar la segunda imagen inmediatamente
+    preloadNextImage(1)
+
+    const timer = setInterval(changeSlide, 7000)
     return () => clearInterval(timer)
-  }, [isLoaded, nextSlide])
+  }, [changeSlide])
+
+  // Manejar carga de imágenes
+  const handleImageLoad = useCallback((index: number) => {
+    setImagesLoaded((prev) => new Set([...prev, index]))
+  }, [])
+
+  // Variantes de animación memoizadas
+  const slideVariants = useMemo(
+    () => ({
+      visible: {
+        opacity: 1,
+        transition: {
+          duration: 2.5,
+          ease: [0.4, 0, 0.2, 1],
+        },
+      },
+      hidden: {
+        opacity: 0,
+        transition: {
+          duration: 2.5,
+          ease: [0.4, 0, 0.2, 1],
+        },
+      },
+    }),
+    [],
+  )
+
+  const scaleVariants = useMemo(
+    () => ({
+      active: {
+        scale: 1.15,
+        transition: {
+          duration: 7,
+          ease: [0.25, 0.46, 0.45, 0.94],
+        },
+      },
+      inactive: {
+        scale: 1.05,
+        transition: {
+          duration: 7,
+          ease: [0.25, 0.46, 0.45, 0.94],
+        },
+      },
+    }),
+    [],
+  )
+
+  const logoVariants = useMemo(
+    () => ({
+      initial: { scale: 0, opacity: 0, y: 50 },
+      animate: {
+        scale: 1,
+        opacity: 1,
+        y: 0,
+        transition: {
+          duration: 1.5,
+          delay: 0.1,
+          ease: [0.25, 0.46, 0.45, 0.94],
+        },
+      },
+      hover: {
+        scale: 1.05,
+        transition: { duration: 0.5, ease: "easeOut" },
+      },
+    }),
+    [],
+  )
 
   return (
-    <div className="relative w-full h-screen overflow-hidden">
-      {/* Placeholder mientras cargan las imágenes */}
-      {!isLoaded && (
-        <div className="absolute inset-0 bg-gray-200 animate-pulse flex items-center justify-center">
-          <div className="text-gray-500">Cargando...</div>
-        </div>
-      )}
-
+    <div className="relative h-[400px] md:h-[650px] overflow-hidden">
       {slides.map((slide, index) => (
         <motion.div
           key={slide.id}
+          variants={slideVariants}
+          initial="hidden"
+          animate={index === currentSlide ? "visible" : "hidden"}
           className="absolute inset-0"
-          initial={{ opacity: 0 }}
-          animate={{ 
-            opacity: currentSlide === index ? 1 : 0,
-            scale: currentSlide === index ? 1 : 1.1 
+          style={{
+            zIndex: index === currentSlide ? 2 : 1,
+            willChange: "opacity", // Optimización CSS
           }}
-          transition={{ 
-            duration: 1.5, 
-            ease: "easeInOut",
-            scale: { duration: 7 }
-          }}
-          style={{ zIndex: currentSlide === index ? 1 : 0 }}
         >
-          <Image
-            src={slide.image}
-            alt={slide.alt}
-            fill
-            priority={index === 0} // Prioridad solo para la primera imagen
-            quality={85} // Reducir calidad ligeramente para mejor rendimiento
-            sizes="100vw"
-            className="object-cover"
-            placeholder="blur"
-            blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
-            onLoad={() => {
-              if (index === 0) setIsLoaded(true)
-            }}
+          <motion.div
+            variants={scaleVariants}
+            initial="inactive"
+            animate={index === currentSlide ? "active" : "inactive"}
+            className="w-full h-full"
+            style={{ willChange: "transform" }} // Optimización CSS
+          >
+            <Image
+              src={slide.image || "/placeholder.svg"}
+              alt={slide.alt}
+              fill
+              className="object-cover"
+              priority={index === 0} // Solo la primera imagen tiene prioridad
+              loading={index === 0 ? "eager" : "lazy"}
+              quality={85} // Reducir calidad ligeramente para mejor rendimiento
+              sizes="100vw" // Optimización de responsive images
+              onLoad={() => handleImageLoad(index)}
+              placeholder="blur"
+              blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
+            />
+          </motion.div>
+          {/* Overlay optimizado */}
+          <div
+            className="absolute inset-0 bg-black/20"
+            style={{ pointerEvents: "none" }} // Evitar interferencia con eventos
           />
         </motion.div>
       ))}
 
-      {/* Centered Logo */}
-      <div className="absolute inset-0 flex items-center justify-center z-10">
+      {/* Logo centrado */}
+      <div className="absolute inset-0 flex items-center justify-center z-30 px-4">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 1 }}
+          variants={logoVariants}
+          initial="initial"
+          animate="animate"
+          whileHover="hover"
+          className="text-center"
         >
           <Image
             src="/images/logo.png"
-            alt="Logo"
-            width={200}
-            height={100}
+            alt="Paraíso Hotel Logo"
+            width={300}
+            height={150}
+            className="h-24 sm:h-28 md:h-32 lg:h-36 xl:h-44 w-auto drop-shadow-2xl"
             priority
-            className="filter drop-shadow-lg"
+            quality={90}
+            sizes="(max-width: 640px) 200px, (max-width: 768px) 250px, (max-width: 1024px) 300px, 350px"
           />
         </motion.div>
       </div>
 
-      {/* Indicadores opcionales */}
-      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2 z-10">
+      {/* Indicadores de slide (opcional) */}
+      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-30 flex space-x-2">
         {slides.map((_, index) => (
           <button
             key={index}
             onClick={() => setCurrentSlide(index)}
-            className={`w-3 h-3 rounded-full transition-colors ${
-              currentSlide === index ? 'bg-white' : 'bg-white/50'
+            className={`w-2 h-2 rounded-full transition-all duration-300 ${
+              index === currentSlide ? "bg-white scale-125" : "bg-white/50 hover:bg-white/75"
             }`}
-            aria-label={`Ir a slide ${index + 1}`}
+            aria-label={`Ir al slide ${index + 1}`}
           />
         ))}
       </div>
