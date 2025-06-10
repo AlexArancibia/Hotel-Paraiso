@@ -3,7 +3,7 @@
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { useState, useEffect } from "react"
-import { X } from "lucide-react"
+import { X, ChevronLeft, ChevronRight } from "lucide-react"
 
 interface GalleryImage {
   src: string
@@ -21,6 +21,7 @@ export default function HotelsShowcaseSection() {
   const [currentImageIndex, setCurrentImageIndex] = useState<{ [key: string]: number }>({})
   const [hotelImages, setHotelImages] = useState<{ [key: string]: GalleryImage[] }>({})
   const [isTransitioning, setIsTransitioning] = useState<{ [key: string]: boolean }>({})
+  const [thumbnailStartIndex, setThumbnailStartIndex] = useState<{ [key: string]: number }>({})
 
   const hotels: Hotel[] = [
     {
@@ -40,12 +41,12 @@ export default function HotelsShowcaseSection() {
     },
   ]
 
-  // Función para generar las rutas de imágenes dinámicamente
+  // Función para generar las rutas de imágenes dinámicamente (hasta 10 imágenes)
   const generateImagePaths = (hotelName: string): GalleryImage[] => {
     const images: GalleryImage[] = []
 
-    // Imágenes del 1 al 5 (la imagen 1 será la principal)
-    for (let i = 1; i <= 5; i++) {
+    // Imágenes del 1 al 10
+    for (let i = 1; i <= 10; i++) {
       images.push({
         src: `/${hotelName}/${hotelName}${i}.jpg`,
         alt: `Hotel Paraíso ${hotelName.charAt(0).toUpperCase() + hotelName.slice(1)} - Vista ${i}`,
@@ -71,6 +72,7 @@ export default function HotelsShowcaseSection() {
     const loadHotelImages = async () => {
       const newHotelImages: { [key: string]: GalleryImage[] } = {}
       const newCurrentImageIndex: { [key: string]: number } = {}
+      const newThumbnailStartIndex: { [key: string]: number } = {}
 
       for (const hotel of hotels) {
         const potentialImages = generateImagePaths(hotel.name)
@@ -83,17 +85,65 @@ export default function HotelsShowcaseSection() {
           }
         }
 
-        newHotelImages[hotel.id] = existingImages.slice(0, 5)
+        newHotelImages[hotel.id] = existingImages.slice(0, 10) // Hasta 10 imágenes
         newCurrentImageIndex[hotel.id] = 0
+        newThumbnailStartIndex[hotel.id] = 0
       }
 
       setHotelImages(newHotelImages)
       setCurrentImageIndex(newCurrentImageIndex)
+      setThumbnailStartIndex(newThumbnailStartIndex)
     }
 
     loadHotelImages()
   }, [])
 
+  // Navegación del carrusel principal
+  const navigateCarousel = (hotelId: string, direction: "prev" | "next") => {
+    const images = hotelImages[hotelId] || []
+    if (images.length <= 1) return
+
+    const currentIndex = currentImageIndex[hotelId] || 0
+    let newIndex
+
+    if (direction === "prev") {
+      newIndex = currentIndex === 0 ? images.length - 1 : currentIndex - 1
+    } else {
+      newIndex = currentIndex === images.length - 1 ? 0 : currentIndex + 1
+    }
+
+    setIsTransitioning((prev) => ({ ...prev, [hotelId]: true }))
+
+    setTimeout(() => {
+      setCurrentImageIndex((prev) => ({ ...prev, [hotelId]: newIndex }))
+      updateThumbnailView(hotelId, newIndex)
+      setTimeout(() => {
+        setIsTransitioning((prev) => ({ ...prev, [hotelId]: false }))
+      }, 200)
+    }, 100)
+  }
+
+  // Actualizar vista de miniaturas para mostrar la imagen actual
+  const updateThumbnailView = (hotelId: string, newIndex: number) => {
+    const images = hotelImages[hotelId] || []
+    if (images.length <= 4) return // No necesitamos desplazar si hay 4 o menos imágenes
+
+    const currentStart = thumbnailStartIndex[hotelId] || 0
+
+    // Si la imagen seleccionada no está visible en las 4 miniaturas actuales
+    if (newIndex < currentStart || newIndex >= currentStart + 4) {
+      // Calcular el nuevo índice de inicio para que la imagen seleccionada esté visible
+      let newStart = newIndex - 1 // Intentar mostrar una imagen antes de la seleccionada
+
+      // Asegurarse de que el índice de inicio esté dentro de los límites
+      newStart = Math.max(0, newStart) // No menor que 0
+      newStart = Math.min(newStart, images.length - 4) // No tan grande que muestre menos de 4 imágenes
+
+      setThumbnailStartIndex((prev) => ({ ...prev, [hotelId]: newStart }))
+    }
+  }
+
+  // Manejar clic en miniatura
   const handleThumbnailClick = (hotelId: string, index: number) => {
     if (currentImageIndex[hotelId] === index) return
 
@@ -128,6 +178,15 @@ Gracias!`
     const images = hotelImages[hotel.id] || []
     const currentIndex = currentImageIndex[hotel.id] || 0
     return images[currentIndex] || { src: "/placeholder.svg", alt: `Hotel ${hotel.displayName}` }
+  }
+
+  // Obtener las 4 miniaturas visibles
+  const getVisibleThumbnails = (hotelId: string) => {
+    const images = hotelImages[hotelId] || []
+    if (images.length <= 4) return images // Si hay 4 o menos, mostrar todas
+
+    const startIndex = thumbnailStartIndex[hotelId] || 0
+    return images.slice(startIndex, startIndex + 4)
   }
 
   const getHotelContent = (hotelId: string) => {
@@ -212,6 +271,9 @@ Gracias!`
               const images = hotelImages[hotel.id] || []
               const currentIndex = currentImageIndex[hotel.id] || 0
               const isTransitioningImage = isTransitioning[hotel.id] || false
+              const visibleThumbnails = getVisibleThumbnails(hotel.id)
+              const thumbnailStart = thumbnailStartIndex[hotel.id] || 0
+              const showNavigation = images.length > 1
 
               return (
                 <div
@@ -220,7 +282,7 @@ Gracias!`
                     hotel.id === "trujillo" ? "md:col-span-2 lg:col-span-1" : ""
                   }`}
                 >
-                  {/* Galería de imágenes - Imagen principal */}
+                  {/* Imagen principal con controles */}
                   <div className="relative">
                     <div className="relative h-48 sm:h-56 lg:h-64 overflow-hidden">
                       <div
@@ -237,33 +299,70 @@ Gracias!`
                           quality={100}
                         />
                       </div>
+
+                      {/* Controles del carrusel principal */}
+                      {showNavigation && (
+                        <>
+                          {/* Botón anterior */}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              navigateCarousel(hotel.id, "prev")
+                            }}
+                            className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-all duration-200 z-10"
+                            aria-label="Imagen anterior"
+                          >
+                            <ChevronLeft size={20} />
+                          </button>
+
+                          {/* Botón siguiente */}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              navigateCarousel(hotel.id, "next")
+                            }}
+                            className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-all duration-200 z-10"
+                            aria-label="Imagen siguiente"
+                          >
+                            <ChevronRight size={20} />
+                          </button>
+
+                          {/* Contador de imágenes */}
+                          <div className="absolute top-3 right-3 bg-black/50 text-white px-2 py-1 rounded-full text-xs font-medium">
+                            {currentIndex + 1} / {images.length}
+                          </div>
+                        </>
+                      )}
                     </div>
 
-                    {/* Galería de miniaturas - Todas las 5 imágenes */}
+                    {/* Carrusel de miniaturas */}
                     {images.length > 0 && (
                       <div className="p-2 bg-white">
-                        <div className="grid grid-cols-5 gap-2">
-                          {images.map((image, index) => (
-                            <div
-                              key={index}
-                              className={`relative h-14 sm:h-16 lg:h-18 overflow-hidden rounded-lg cursor-pointer thumbnail-hover ${
-                                index === currentIndex ? "ring-2 ring-[#F58718] ring-offset-2" : ""
-                              }`}
-                              onClick={() => handleThumbnailClick(hotel.id, index)}
-                            >
-                              <Image
-                                src={image.src || "/placeholder.svg"}
-                                alt={image.alt}
-                                fill
-                                className="object-cover"
-                                quality={80}
-                              />
-                              {/* Overlay para imagen activa */}
-                              {index === currentIndex && (
-                                <div className="absolute inset-0 bg-[#F58718]/10 pointer-events-none" />
-                              )}
-                            </div>
-                          ))}
+                        <div className="grid grid-cols-4 gap-2">
+                          {visibleThumbnails.map((image, index) => {
+                            const actualIndex = thumbnailStart + index
+                            return (
+                              <div
+                                key={actualIndex}
+                                className={`relative h-14 sm:h-16 lg:h-18 overflow-hidden rounded-lg cursor-pointer thumbnail-hover ${
+                                  actualIndex === currentIndex ? "ring-2 ring-[#F58718] ring-offset-2" : ""
+                                }`}
+                                onClick={() => handleThumbnailClick(hotel.id, actualIndex)}
+                              >
+                                <Image
+                                  src={image.src || "/placeholder.svg"}
+                                  alt={image.alt}
+                                  fill
+                                  className="object-cover"
+                                  quality={80}
+                                />
+                                {/* Overlay para imagen activa */}
+                                {actualIndex === currentIndex && (
+                                  <div className="absolute inset-0 bg-[#F58718]/10 pointer-events-none" />
+                                )}
+                              </div>
+                            )
+                          })}
                         </div>
                       </div>
                     )}
