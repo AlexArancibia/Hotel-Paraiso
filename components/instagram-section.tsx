@@ -68,25 +68,23 @@ export function InstagramPosts() {
     }
   }, [])
 
-  // Función para obtener los posts de Instagram
+  // Función para obtener los posts de Instagram desde nuestra API
   const fetchInstagramPosts = async () => {
     try {
       setLoading(true)
       setError(null)
 
-      const igId = process.env.NEXT_PUBLIC_INSTAGRAM_ID
-      const accessToken = process.env.NEXT_PUBLIC_INSTAGRAM_ACCESS_TOKEN
-
-      if (!igId || !accessToken) {
-        throw new Error("Variables de entorno de Instagram no configuradas")
-      }
-
-      const url = `https://graph.facebook.com/v23.0/${igId}/media?fields=id,media_url,media_product_type,caption,alt_text,like_count,comments_count,thumbnail_url,permalink,legacy_instagram_media_id,shortcode&access_token=${accessToken}`
-
-      const response = await fetch(url)
+      // Llamar a nuestra API route en lugar de directamente a Instagram
+      const response = await fetch("/api/instagram", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
 
       if (!response.ok) {
-        throw new Error(`Error ${response.status}: ${response.statusText}`)
+        const errorData = await response.json()
+        throw new Error(errorData.error || `Error ${response.status}: ${response.statusText}`)
       }
 
       const data: InstagramApiResponse = await response.json()
