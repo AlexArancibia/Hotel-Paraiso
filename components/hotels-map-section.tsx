@@ -16,7 +16,7 @@ export default function HotelsMapSection() {
     {
       id: "piura",
       name: "Piura",
-      position: { top: "35%", left: "25%" },
+      position: { top: "26%", left: "15%" },
       description: "Hotel moderno en el corazón de Piura",
       rooms: "57 habitaciones",
       details:
@@ -24,8 +24,8 @@ export default function HotelsMapSection() {
       googleMapsUrl:
         "https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d3973.4263279797874!2d-80.62737652501747!3d-5.195480794782069!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zNcKwMTEnNDMuNyJTIDgwwrAzNycyOS4zIlc!5e0!3m2!1ses!2spe",
       departmentImage: "/images/piura.png",
-      departmentPosition: { top: "25.1%", left: "14.4%" },
-      size: { width: "140px", height: "128px" },
+      departmentPosition: { top: "22.2%", left: "6.7%" },
+      size: { width: "95px", height: "95px" },
     },
     {
       id: "chiclayo",
@@ -56,6 +56,41 @@ export default function HotelsMapSection() {
       size: { width: "124px", height: "117px" },
     },
   ]
+
+  const mobileConfig = {
+    container: {
+      maxWidth: "max-w-md", // Cambiar a max-w-lg o max-w-xl si necesitas más ancho
+      padding: "px-4",
+      sectionPadding: "py-16",
+    },
+    map: {
+      height: "h-[400px]", // Altura ajustada para mantener proporción
+      borderRadius: "rounded-2xl",
+      aspectRatio: "aspect-[605/771]", // Mantener el mismo aspect ratio que desktop
+    },
+    pins: {
+      size: { width: 32, height: 40 }, // Tamaño de los pins en móvil (actualmente 32x40)
+      scale: {
+        normal: 1,
+        selected: 1.2,
+      },
+    },
+    departments: {
+      sizeMultiplier: 0.6, // Ajustado para mejor proporción en móvil
+      positionScale: 1, // Mantener las mismas posiciones porcentuales
+    },
+    cards: {
+      spacing: "space-y-4",
+      padding: "p-4",
+      borderRadius: "rounded-2xl",
+    },
+    title: {
+      iconSize: "w-8 h-8",
+      titleSize: "text-2xl",
+      subtitleSize: "text-3xl",
+      descriptionSize: "text-sm",
+    },
+  }
 
   const selectedLocationData = locations.find((loc) => loc.id === selectedLocation)
 
@@ -142,18 +177,20 @@ export default function HotelsMapSection() {
   // Versión móvil
   if (isMobile) {
     return (
-      <section className="relative bg-[#EDEDED] py-16 px-4">
-        <div className="max-w-md mx-auto">
+      <section
+        className={`relative bg-[#EDEDED] ${mobileConfig.container.sectionPadding} ${mobileConfig.container.padding}`}
+      >
+        <div className={`${mobileConfig.container.maxWidth} mx-auto`}>
           {/* Título */}
           <div className="text-center mb-8">
             <div className="flex items-center justify-center space-x-3 mb-4">
-              <MapPin className="w-8 h-8 text-[#F58718]" />
+              <MapPin className={`${mobileConfig.title.iconSize} text-[#F58718]`} />
               <div>
-                <h3 className="text-2xl font-bold text-gray-700">NUESTROS</h3>
-                <h3 className="text-3xl font-extrabold text-[#F58718]">HOTELES</h3>
+                <h3 className={`${mobileConfig.title.titleSize} font-bold text-gray-700`}>NUESTROS</h3>
+                <h3 className={`${mobileConfig.title.subtitleSize} font-extrabold text-[#F58718]`}>HOTELES</h3>
               </div>
             </div>
-            <p className="text-gray-800 text-sm leading-relaxed">
+            <p className={`text-gray-800 ${mobileConfig.title.descriptionSize} leading-relaxed`}>
               Estamos en las ciudades de{" "}
               <span className="font-semibold text-[#F58718]">Chiclayo, Trujillo y Piura</span>, conectando nuestros
               servicios con lo mejor del norte del país.
@@ -162,7 +199,9 @@ export default function HotelsMapSection() {
 
           {/* Mapa móvil */}
           <div className="relative mb-8">
-            <div className="relative w-full h-[450px] rounded-2xl overflow-hidden">
+            <div
+              className={`relative w-full ${mobileConfig.map.aspectRatio} max-h-[400px] ${mobileConfig.map.borderRadius} overflow-hidden`}
+            >
               <Image
                 src="/images/mapa-isolated.png"
                 alt="Mapa del Perú"
@@ -170,8 +209,6 @@ export default function HotelsMapSection() {
                 className="object-contain"
                 style={{
                   objectPosition: "center",
-                  maxHeight: "100%",
-                  maxWidth: "100%",
                 }}
               />
 
@@ -191,7 +228,10 @@ export default function HotelsMapSection() {
                   <motion.div
                     whileTap={{ scale: 0.95 }}
                     animate={{
-                      scale: selectedLocation === location.id ? 1.2 : 1,
+                      scale:
+                        selectedLocation === location.id
+                          ? mobileConfig.pins.scale.selected
+                          : mobileConfig.pins.scale.normal,
                       filter:
                         selectedLocation === location.id
                           ? "drop-shadow(0 0 12px rgba(249, 115, 22, 0.7))"
@@ -203,9 +243,13 @@ export default function HotelsMapSection() {
                     <Image
                       src="/images/mappin.png"
                       alt="Map pin icon"
-                      width={40}
-                      height={48}
-                      className="w-8 h-10 object-contain"
+                      width={mobileConfig.pins.size.width}
+                      height={mobileConfig.pins.size.height}
+                      className="object-contain"
+                      style={{
+                        width: `${mobileConfig.pins.size.width}px`,
+                        height: `${mobileConfig.pins.size.height}px`,
+                      }}
                     />
                   </motion.div>
                 </div>
@@ -228,8 +272,8 @@ export default function HotelsMapSection() {
                       top: location.departmentPosition.top,
                       left: location.departmentPosition.left,
                       transform: "translate(-50%, -50%)",
-                      width: `calc(${location.size.width} * 0.5)`,
-                      height: `calc(${location.size.height} * 0.5)`,
+                      width: `${Number.parseInt(location.size.width) * mobileConfig.departments.sizeMultiplier}px`,
+                      height: `${Number.parseInt(location.size.height) * mobileConfig.departments.sizeMultiplier}px`,
                       zIndex: selectedLocation === location.id ? 5 : 1,
                     }}
                   >
@@ -246,17 +290,17 @@ export default function HotelsMapSection() {
           </div>
 
           {/* Cards de información móvil */}
-          <div className="space-y-4">
+          <div className={mobileConfig.cards.spacing}>
             {locations.map((location) => (
               <motion.div
                 key={location.id}
                 layout
-                className={`rounded-2xl overflow-hidden transition-all duration-300 ${
+                className={`${mobileConfig.cards.borderRadius} overflow-hidden transition-all duration-300 ${
                   selectedLocation === location.id ? "bg-white shadow-lg" : "bg-gray-100"
                 }`}
                 onClick={() => handleClick(location.id)}
               >
-                <div className="p-4">
+                <div className={mobileConfig.cards.padding}>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
                       <MapPin className="w-5 h-5 text-[#F58718]" />

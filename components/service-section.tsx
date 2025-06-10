@@ -21,7 +21,7 @@ const services = [
   },
   {
     name: "Wifi Gratuito",
-    image: "/images/WiFi 1.png",
+    image: "/images/wifi.png",
     description: "Resuelve todos los pendientes con nuestro servicio de Wifi en todo el hotel.",
   },
   {

@@ -7,12 +7,12 @@ import Image from "next/image"
 const slides = [
   {
     id: 1,
-    image: "/images/banner1.png",
+    image: "/images/banner1.jpg",
     alt: "Complejo residencial",
   },
   {
     id: 2,
-    image: "/images/banner2.png",
+    image: "/images/banner2.jpg",
     alt: "Habitación de hotel",
   },
 ]
