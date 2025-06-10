@@ -22,6 +22,7 @@ export default function HotelsShowcaseSection() {
   const [hotelImages, setHotelImages] = useState<{ [key: string]: GalleryImage[] }>({})
   const [isTransitioning, setIsTransitioning] = useState<{ [key: string]: boolean }>({})
   const [thumbnailStartIndex, setThumbnailStartIndex] = useState<{ [key: string]: number }>({})
+  const [imageErrors, setImageErrors] = useState<{ [key: string]: boolean }>({})
 
   const hotels: Hotel[] = [
     {
@@ -41,12 +42,19 @@ export default function HotelsShowcaseSection() {
     },
   ]
 
-  // Función para generar las rutas de imágenes dinámicamente (hasta 10 imágenes)
+  // Configuración fija de imágenes por hotel (ajusta según tus imágenes reales)
+  const hotelImageCounts = {
+    piura: 10,    // Número de imágenes que realmente tienes para Piura
+    chiclayo: 10, // Número de imágenes que realmente tienes para Chiclayo
+    trujillo: 9  // Número de imágenes que realmente tienes para Trujillo
+  }
+
+  // Función para generar las rutas de imágenes basada en el conteo real
   const generateImagePaths = (hotelName: string): GalleryImage[] => {
     const images: GalleryImage[] = []
+    const count = hotelImageCounts[hotelName as keyof typeof hotelImageCounts] || 5
 
-    // Imágenes del 1 al 10
-    for (let i = 1; i <= 10; i++) {
+    for (let i = 1; i <= count; i++) {
       images.push({
         src: `/${hotelName}/${hotelName}${i}.jpg`,
         alt: `Hotel Paraíso ${hotelName.charAt(0).toUpperCase() + hotelName.slice(1)} - Vista ${i}`,
@@ -56,47 +64,39 @@ export default function HotelsShowcaseSection() {
     return images
   }
 
-  // Función para verificar si una imagen existe
-  const checkImageExists = async (src: string): Promise<boolean> => {
-    return new Promise((resolve) => {
-      const img = new window.Image()
-      img.crossOrigin = "anonymous"
-      img.onload = () => resolve(true)
-      img.onerror = () => resolve(false)
-      img.src = src
-    })
-  }
-
-  // Cargar imágenes existentes para cada hotel
+  // Inicializar imágenes sin verificación asíncrona
   useEffect(() => {
-    const loadHotelImages = async () => {
+    const initializeHotelImages = () => {
       const newHotelImages: { [key: string]: GalleryImage[] } = {}
       const newCurrentImageIndex: { [key: string]: number } = {}
       const newThumbnailStartIndex: { [key: string]: number } = {}
 
-      for (const hotel of hotels) {
-        const potentialImages = generateImagePaths(hotel.name)
-        const existingImages: GalleryImage[] = []
-
-        for (const image of potentialImages) {
-          const exists = await checkImageExists(image.src)
-          if (exists) {
-            existingImages.push(image)
-          }
-        }
-
-        newHotelImages[hotel.id] = existingImages.slice(0, 10) // Hasta 10 imágenes
+      hotels.forEach(hotel => {
+        const images = generateImagePaths(hotel.name)
+        newHotelImages[hotel.id] = images
         newCurrentImageIndex[hotel.id] = 0
         newThumbnailStartIndex[hotel.id] = 0
-      }
+      })
 
       setHotelImages(newHotelImages)
       setCurrentImageIndex(newCurrentImageIndex)
       setThumbnailStartIndex(newThumbnailStartIndex)
     }
 
-    loadHotelImages()
+    initializeHotelImages()
   }, [])
+
+  // Manejar errores de carga de imágenes
+  const handleImageError = (hotelId: string, imageIndex: number) => {
+    const errorKey = `${hotelId}-${imageIndex}`
+    setImageErrors(prev => ({ ...prev, [errorKey]: true }))
+  }
+
+  // Verificar si una imagen tiene error
+  const hasImageError = (hotelId: string, imageIndex: number) => {
+    const errorKey = `${hotelId}-${imageIndex}`
+    return imageErrors[errorKey] || false
+  }
 
   // Navegación del carrusel principal
   const navigateCarousel = (hotelId: string, direction: "prev" | "next") => {
@@ -126,18 +126,14 @@ export default function HotelsShowcaseSection() {
   // Actualizar vista de miniaturas para mostrar la imagen actual
   const updateThumbnailView = (hotelId: string, newIndex: number) => {
     const images = hotelImages[hotelId] || []
-    if (images.length <= 4) return // No necesitamos desplazar si hay 4 o menos imágenes
+    if (images.length <= 4) return
 
     const currentStart = thumbnailStartIndex[hotelId] || 0
 
-    // Si la imagen seleccionada no está visible en las 4 miniaturas actuales
     if (newIndex < currentStart || newIndex >= currentStart + 4) {
-      // Calcular el nuevo índice de inicio para que la imagen seleccionada esté visible
-      let newStart = newIndex - 1 // Intentar mostrar una imagen antes de la seleccionada
-
-      // Asegurarse de que el índice de inicio esté dentro de los límites
-      newStart = Math.max(0, newStart) // No menor que 0
-      newStart = Math.min(newStart, images.length - 4) // No tan grande que muestre menos de 4 imágenes
+      let newStart = newIndex - 1
+      newStart = Math.max(0, newStart)
+      newStart = Math.min(newStart, images.length - 4)
 
       setThumbnailStartIndex((prev) => ({ ...prev, [hotelId]: newStart }))
     }
@@ -183,7 +179,7 @@ Gracias!`
   // Obtener las 4 miniaturas visibles
   const getVisibleThumbnails = (hotelId: string) => {
     const images = hotelImages[hotelId] || []
-    if (images.length <= 4) return images // Si hay 4 o menos, mostrar todas
+    if (images.length <= 4) return images
 
     const startIndex = thumbnailStartIndex[hotelId] || 0
     return images.slice(startIndex, startIndex + 4)
@@ -296,7 +292,10 @@ Gracias!`
                           alt={currentImage.alt}
                           fill
                           className="object-cover"
-                          quality={100}
+                          quality={85}
+                          priority={currentIndex === 0}
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          onError={() => handleImageError(hotel.id, currentIndex)}
                         />
                       </div>
 
@@ -341,6 +340,8 @@ Gracias!`
                         <div className="grid grid-cols-4 gap-2">
                           {visibleThumbnails.map((image, index) => {
                             const actualIndex = thumbnailStart + index
+                            const hasError = hasImageError(hotel.id, actualIndex)
+                            
                             return (
                               <div
                                 key={actualIndex}
@@ -350,11 +351,13 @@ Gracias!`
                                 onClick={() => handleThumbnailClick(hotel.id, actualIndex)}
                               >
                                 <Image
-                                  src={image.src || "/placeholder.svg"}
+                                  src={hasError ? "/placeholder.svg" : image.src}
                                   alt={image.alt}
                                   fill
                                   className="object-cover"
-                                  quality={80}
+                                  quality={75}
+                                  sizes="80px"
+                                  onError={() => handleImageError(hotel.id, actualIndex)}
                                 />
                                 {/* Overlay para imagen activa */}
                                 {actualIndex === currentIndex && (
@@ -420,7 +423,7 @@ Gracias!`
                 width={1400}
                 height={900}
                 className="object-contain max-w-full max-h-[85vh] rounded-lg shadow-2xl"
-                quality={100}
+                quality={90}
                 onClick={(e) => e.stopPropagation()}
               />
             </div>
