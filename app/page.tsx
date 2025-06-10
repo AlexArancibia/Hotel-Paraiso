@@ -48,7 +48,7 @@ export default function LandingPage() {
       <section id="servicios">
         <ServicesSection />
       </section>
-      <section id="instagram">
+      <section id="galeria">
         <InstagramPosts />
       </section>
       <ServiceBanner />

@@ -59,24 +59,29 @@ export default function HotelsMapSection() {
 
   const mobileConfig = {
     container: {
-      maxWidth: "max-w-md", // Cambiar a max-w-lg o max-w-xl si necesitas más ancho
+      maxWidth: "max-w-md",
       padding: "px-4",
       sectionPadding: "py-16",
     },
     map: {
-      height: "h-[400px]", // Altura ajustada para mantener proporción
+      // Mantener las proporciones exactas del mapa original (605x771)
+      aspectRatio: "aspect-[605/771]",
       borderRadius: "rounded-2xl",
-      aspectRatio: "aspect-[605/771]", // Mantener el mismo aspect ratio que desktop
+      // Usar max-width en lugar de height para mantener proporciones
+      maxWidth: "max-w-sm", // Esto será ~384px en Tailwind
     },
     pins: {
-      size: { width: 32, height: 40 }, // Tamaño de los pins en móvil (actualmente 32x40)
+      // Calcular el tamaño proporcional basado en el ancho del mapa móvil vs desktop
+      // Desktop: 605px, Mobile: ~384px, ratio: 384/605 ≈ 0.635
+      size: { width: 25, height: 30 }, // 40*0.635 ≈ 25, 48*0.635 ≈ 30
       scale: {
         normal: 1,
         selected: 1.2,
       },
     },
     departments: {
-      sizeMultiplier: 0.6, // Ajustado para mejor proporción en móvil
+      // Usar el mismo ratio de escalado que los pins para mantener proporciones
+      sizeMultiplier: 0.635, // 384/605
       positionScale: 1, // Mantener las mismas posiciones porcentuales
     },
     cards: {
@@ -198,9 +203,9 @@ export default function HotelsMapSection() {
           </div>
 
           {/* Mapa móvil */}
-          <div className="relative mb-8">
+          <div className="relative mb-8 flex justify-center">
             <div
-              className={`relative w-full ${mobileConfig.map.aspectRatio} max-h-[400px] ${mobileConfig.map.borderRadius} overflow-hidden`}
+              className={`relative ${mobileConfig.map.maxWidth} w-full ${mobileConfig.map.aspectRatio} ${mobileConfig.map.borderRadius} overflow-hidden`}
             >
               <Image
                 src="/images/mapa-isolated.png"
