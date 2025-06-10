@@ -46,7 +46,7 @@ export const metadata: Metadata = {
     siteName: "Hoteles Paraíso",
     images: [
       {
-        url: "/images/banner1.png",
+        url: "/images/banner1.jpg",
         width: 1200,
         height: 630,
         alt: "Hoteles Paraíso - Norte del Perú",
@@ -59,7 +59,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Hoteles Paraíso - Norte del Perú",
     description: "Experimenta la hospitalidad excepcional en nuestros hoteles ubicados en Chiclayo, Trujillo y Piura.",
-    images: ["/images/banner1.png"],
+    images: ["/images/banner1.jpg"],
   },
   robots: {
     index: true,
