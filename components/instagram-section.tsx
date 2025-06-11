@@ -267,7 +267,7 @@ export function InstagramPosts() {
             <div className="text-center">
               <p className="text-gray-600 mb-4">No se encontraron posts de Instagram</p>
               <a
-                href="https://instagram.com/hotelparaiso"
+                href="https://instagram.com/paraisohoteles"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 bg-gradient-to-r from-[#E4405F] to-[#C13584] text-white px-6 py-3 rounded-full font-semibold hover:shadow-lg transition-all duration-300"
@@ -297,7 +297,7 @@ export function InstagramPosts() {
           </p>
           <div className="mt-4">
             <a
-              href="https://instagram.com/hotelparaiso"
+              href="https://instagram.com/paraisohoteles"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 bg-gradient-to-r from-[#F58718] to-[#e2790f] text-white px-6 py-3 rounded-full font-semibold hover:shadow-lg transition-all duration-300"
@@ -340,7 +340,7 @@ export function InstagramPosts() {
               return (
                 <div
                   key={post.id}
-                  className={`aspect-square group cursor-pointer relative overflow-hidden rounded-lg ${
+                  className={`aspect-[0.8] group cursor-pointer relative overflow-hidden rounded-lg ${
                     isMobile ? "touch-manipulation" : ""
                   }`}
                   onClick={() => handlePostClick(index, post)}
@@ -388,9 +388,9 @@ export function InstagramPosts() {
                     )}
 
                     {/* Overlay con gradiente Instagram */}
-                    {isGradient && (
+                    {/* {isGradient && (
                       <div className="absolute inset-0 bg-gradient-to-br from-[#E4405F]/20 via-[#C13584]/20 to-[#833AB4]/20" />
-                    )}
+                    )} */}
 
                     {/* Controles de video para REELS - Solo aparecen en hover o cuando está pausado */}
                     {isVideo && (isHovered || !isPlaying) && (
@@ -584,7 +584,7 @@ export function InstagramPosts() {
         <div className="text-center mt-12">
           <p className="text-gray-600 mb-4">¿Te gusta lo que ves? ¡Síguenos para más contenido!</p>
           <a
-            href="https://instagram.com/hotelparaiso"
+            href="https://instagram.com/paraisohoteles"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 border-2 border-[#F58718] text-[#F58718] px-6 py-3 rounded-full font-semibold hover:bg-[#E4405F] hover:text-white transition-all duration-300"
