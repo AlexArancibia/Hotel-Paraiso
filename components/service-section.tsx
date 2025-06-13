@@ -31,7 +31,7 @@ const services = [
   },
   {
     name: "Custodia de Equipaje",
-    image: "/images/OFICINA 1.png",
+    image: "/images/VIAJES 1.png",
     description: "Disfruta tu estadía hasta el último minuto, sin cargar tus maletas.",
   },
   {
@@ -51,7 +51,7 @@ const services = [
   },
   {
     name: "Directorio",
-    image: "/images/VIAJES 1.png",
+    image: "/images/OFICINA 1.png",
     description:
       "Una sala diseñada para tus reuniones más privadas. Ideal para encuentros ejecutivos o trabajos en equipo sin distracciones.",
   },

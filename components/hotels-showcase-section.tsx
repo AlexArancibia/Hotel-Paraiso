@@ -26,9 +26,9 @@ export default function HotelsShowcaseSection() {
 
   const hotels: Hotel[] = [
     {
-      id: "piura",
-      name: "piura",
-      displayName: "Piura",
+      id: "trujillo",
+      name: "trujillo",
+      displayName: "Trujillo",
     },
     {
       id: "chiclayo",
@@ -36,10 +36,12 @@ export default function HotelsShowcaseSection() {
       displayName: "Chiclayo",
     },
     {
-      id: "trujillo",
-      name: "trujillo",
-      displayName: "Trujillo",
+      id: "piura",
+      name: "piura",
+      displayName: "Piura",
     },
+    
+    
   ]
 
   // Configuración fija de imágenes por hotel (ajusta según tus imágenes reales)
@@ -158,7 +160,8 @@ export default function HotelsShowcaseSection() {
 
 Gracias!`
 
-    const whatsappUrl = `https://wa.me/51958100066?text=${encodeURIComponent(message)}`
+    const whatsappUrl = `https://web.whatsapp.com/send?phone=51958100066&text=${encodeURIComponent(message)}`;
+
     window.open(whatsappUrl, "_blank")
   }
 
