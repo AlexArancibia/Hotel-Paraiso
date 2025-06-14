@@ -175,10 +175,10 @@ Saludos!`
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="0 NIÑOS">0 NIÑOS</SelectItem>
-                    <SelectItem value="1 NIÑO">1 NIÑO</SelectItem>
-                    <SelectItem value="2 NIÑOS">2 NIÑOS</SelectItem>
-                    <SelectItem value="3 NIÑOS">3 NIÑOS</SelectItem>
+                    <SelectItem value="0 NIÑOS">0 NIÑOS <span className="text-[0.75em]">12 AÑOS</span></SelectItem>
+                    <SelectItem value="1 NIÑO">1 NIÑO <span className="text-[0.75em]">12 AÑOS</span></SelectItem>
+                    <SelectItem value="2 NIÑOS">2 NIÑOS <span className="text-[0.75em]">12 AÑOS</span></SelectItem>
+                    <SelectItem value="3 NIÑOS">3 NIÑOS <span className="text-[0.75em]">12 AÑOS</span></SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -235,18 +235,18 @@ Saludos!`
                   href={`https://wa.me/51958100066?text=${encodedMessage}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block lg:hidden bg-[#25D366] hover:bg-[#128C7E] text-white font-bold py-2.5 px-4 text-xs uppercase rounded shadow transition-all duration-300 text-center"
+                  className="block lg:hidden bg-[#F58718]  hover:bg-[#128C7E] text-white font-bold py-2.5 px-4 text-xs uppercase rounded shadow transition-all duration-300 text-center"
                 >
-                  RESERVAR POR WHATSAPP
+                  RESERVAR 
                 </a>
                 {/* Desktop */}
                 <a
                   href={`https://web.whatsapp.com/send?phone=51958100066&text=${encodedMessage}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hidden lg:block bg-[#25D366] hover:bg-[#128C7E] text-white font-bold py-2.5 px-4 text-xs uppercase rounded shadow transition-all duration-300 text-center"
+                  className="hidden lg:block bg-[#F58718]  hover:bg-[#128C7E] text-white font-bold py-2.5 px-4 text-xs uppercase rounded shadow transition-all duration-300 text-center"
                 >
-                  RESERVAR POR WHATSAPP
+                  RESERVAR 
                 </a>
               </div>
             </div>
