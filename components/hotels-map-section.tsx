@@ -14,18 +14,18 @@ export default function HotelsMapSection() {
 
   const locations = [
     {
-      id: "piura",
-      name: "Piura",
-      position: { top: "26%", left: "15%" },
-      description: "Hotel moderno en el corazón de Piura",
-      rooms: "57 habitaciones",
+      id: "trujillo",
+      name: "Trujillo",
+      position: { top: "43%", left: "27%" },
+      description: "A 6 minutos de la Plaza de Armas",
+      rooms: "52 habitaciones",
       details:
-        "Nos encontramos en la esquina de Malecón Eguiguren con Jr. Callao, a solo tres cuadras de la Plaza de Armas de Piura. Una zona céntrica y segura, ideal para tu estadía por negocios o descanso.",
+        "Estamos en Jr. San Martín 240, al frente del Club Libertad y a solo 6 minutos de la Plaza de Armas de Trujillo. Una ubicación ideal para disfrutar la ciudad, con fácil acceso a su centro histórico, zonas comerciales y culturales.",
       googleMapsUrl:
-        "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3973.4264395588602!2d-80.6247863!3d-5.1954631!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x904a11780d0a006b%3A0xd14efc074ee089b2!2sHotel%20Para%C3%ADso%20Piura!5e0!3m2!1ses!2spe!4v1749661610463!5m2!1ses!2spe",
-      departmentImage: "/images/piura.png",
-      departmentPosition: { top: "22.2%", left: "6.7%" },
-      size: { width: "95px", height: "95px" },
+        "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3949.8906103188083!2d-79.0315849!3d-8.112619700000002!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x91ad3d84951fad65%3A0xac62050003cef6d3!2sParaiso%20Hotel!5e0!3m2!1ses!2spe!4v1749661498247!5m2!1ses!2spe",
+      departmentImage: "/images/la-libertad.png",
+      departmentPosition: { top: "35.3%", left: "18.1%" },
+      size: { width: "124px", height: "117px" },
     },
     {
       id: "chiclayo",
@@ -42,19 +42,21 @@ export default function HotelsMapSection() {
       size: { width: "85px", height: "85px" },
     },
     {
-      id: "trujillo",
-      name: "Trujillo",
-      position: { top: "43%", left: "27%" },
-      description: "A 6 minutos de la Plaza de Armas",
-      rooms: "52 habitaciones",
+      id: "piura",
+      name: "Piura",
+      position: { top: "26%", left: "15%" },
+      description: "Hotel moderno en el corazón de Piura",
+      rooms: "57 habitaciones",
       details:
-        "Estamos en Jr. San Martín 240, al frente del Club Libertad y a solo 6 minutos de la Plaza de Armas de Trujillo. Una ubicación ideal para disfrutar la ciudad, con fácil acceso a su centro histórico, zonas comerciales y culturales.",
+        "Nos encontramos en la esquina de Malecón Eguiguren con Jr. Callao, a solo tres cuadras de la Plaza de Armas de Piura. Una zona céntrica y segura, ideal para tu estadía por negocios o descanso.",
       googleMapsUrl:
-        "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3949.8906103188083!2d-79.0315849!3d-8.112619700000002!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x91ad3d84951fad65%3A0xac62050003cef6d3!2sParaiso%20Hotel!5e0!3m2!1ses!2spe!4v1749661498247!5m2!1ses!2spe",
-      departmentImage: "/images/la-libertad.png",
-      departmentPosition: { top: "35.3%", left: "18.1%" },
-      size: { width: "124px", height: "117px" },
+        "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3973.4264395588602!2d-80.6247863!3d-5.1954631!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x904a11780d0a006b%3A0xd14efc074ee089b2!2sHotel%20Para%C3%ADso%20Piura!5e0!3m2!1ses!2spe!4v1749661610463!5m2!1ses!2spe",
+      departmentImage: "/images/piura.png",
+      departmentPosition: { top: "22.2%", left: "6.7%" },
+      size: { width: "95px", height: "95px" },
     },
+    
+    
   ]
 
   const mobileConfig = {

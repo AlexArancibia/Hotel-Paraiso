@@ -175,10 +175,10 @@ Saludos!`
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="0 NIÑOS">0 NIÑOS <span className="text-[0.75em]">12 AÑOS</span></SelectItem>
-                    <SelectItem value="1 NIÑO">1 NIÑO <span className="text-[0.75em]">12 AÑOS</span></SelectItem>
-                    <SelectItem value="2 NIÑOS">2 NIÑOS <span className="text-[0.75em]">12 AÑOS</span></SelectItem>
-                    <SelectItem value="3 NIÑOS">3 NIÑOS <span className="text-[0.75em]">12 AÑOS</span></SelectItem>
+                    <SelectItem value="0 NIÑOS">0 NIÑOS <span className="text-[0.7em]">- 12 AÑOS</span></SelectItem>
+                    <SelectItem value="1 NIÑO">1 NIÑO <span className="text-[0.7em]">- 12 AÑOS</span></SelectItem>
+                    <SelectItem value="2 NIÑOS">2 NIÑOS <span className="text-[0.7em]">- 12 AÑOS</span></SelectItem>
+                    <SelectItem value="3 NIÑOS">3 NIÑOS <span className="text-[0.7em]">- 12 AÑOS</span></SelectItem>
                   </SelectContent>
                 </Select>
               </div>
