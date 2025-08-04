@@ -12,9 +12,9 @@ const montserrat = Montserrat({
 })
 
 export const metadata: Metadata = {
-  title: "Hoteles Paraíso - Norte del Perú | Chiclayo, Trujillo y Piura",
+  title: "Hoteles Paraíso - Norte del Perú | Trujillo, Chiclayo y Piura",
   description:
-    "Experimenta la hospitalidad excepcional en nuestros hoteles ubicados en Chiclayo, Trujillo y Piura. Más de 30 años de experiencia brindando el mejor servicio en el norte del Perú.",
+    "Experimenta la hospitalidad excepcional en nuestros hoteles ubicados en Trujillo, Chiclayo y Piura. Más de 30 años de experiencia brindando el mejor servicio en el norte del Perú.",
   keywords: [
     "hoteles peru",
     "hoteles chiclayo",
@@ -39,9 +39,9 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   openGraph: {
-    title: "Hoteles Paraíso - Norte del Perú | Chiclayo, Trujillo y Piura",
+    title: "Hoteles Paraíso - Norte del Perú | Trujillo, Chiclayo y Piura",
     description:
-      "Experimenta la hospitalidad excepcional en nuestros hoteles ubicados en Chiclayo, Trujillo y Piura. Más de 30 años de experiencia brindando el mejor servicio en el norte del Perú.",
+      "Experimenta la hospitalidad excepcional en nuestros hoteles ubicados en Trujillo, Chiclayo y Piura. Más de 30 años de experiencia brindando el mejor servicio en el norte del Perú.",
     url: "https://hotelesparaiso.com.pe",
     siteName: "Hoteles Paraíso",
     images: [
@@ -58,7 +58,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Hoteles Paraíso - Norte del Perú",
-    description: "Experimenta la hospitalidad excepcional en nuestros hoteles ubicados en Chiclayo, Trujillo y Piura.",
+    description: "Experimenta la hospitalidad excepcional en nuestros hoteles ubicados en Trujillo, Chiclayo y Piura.",
     images: ["/images/banner1.jpg"],
   },
   robots: {
@@ -107,7 +107,7 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "Hotel",
               name: "Hoteles Paraíso",
-              description: "Cadena de hoteles en el norte del Perú con sedes en Chiclayo, Trujillo y Piura",
+              description: "Cadena de hoteles en el norte del Perú con sedes en Trujillo, Chiclayo y Piura",
               url: "https://hotelesparaiso.com.pe",
               telephone: "+51958100066",
               email: "ventas@hotelesparaiso.com.pe",

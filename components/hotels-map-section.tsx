@@ -199,7 +199,7 @@ export default function HotelsMapSection() {
             </div>
             <p className={`text-gray-800 ${mobileConfig.title.descriptionSize} leading-relaxed`}>
               Estamos en las ciudades de{" "}
-              <span className="font-semibold text-[#F58718]">Chiclayo, Trujillo y Piura</span>, conectando nuestros
+              <span className="font-semibold text-[#F58718]">Trujillo, Chiclayo y Piura</span>, conectando nuestros
               servicios con lo mejor del norte del país.
             </p>
           </div>
@@ -416,7 +416,7 @@ export default function HotelsMapSection() {
                       className="text-gray-800 leading-relaxed text-xl drop-shadow-lg w-[400px] xl:w-[600px]"
                     >
                       Estamos en las ciudades de{" "}
-                      <span className="font-semibold text-[#F58718]">Chiclayo, Trujillo y Piura</span>, conectando
+                      <span className="font-semibold text-[#F58718]">Trujillo, Chiclayo y Piura</span>, conectando
                       nuestros servicios con lo mejor del norte del país. Nuestros hoteles son reconocidos por su
                       ubicación estratégica cerca de los principales atractivos y centros empresariales, instalaciones
                       cómodas y funcionales, y, sobre todo, por la calidez y compromiso de nuestro equipo en cada
